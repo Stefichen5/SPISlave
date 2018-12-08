@@ -7,8 +7,8 @@ entity tbSPISlave is
 end entity tbSPISlave;
 
 architecture Bhv of tbSPISlave is
-	constant cClkTime : time := 5 ns;
-	constant cSPIClkTime : time := 20 ns;
+	constant cClkTime : time := 2 ns;
+	constant cSPIClkTime : time := 7 ns;
 	constant cSimTime : time := 100 ns;
 	constant cWordLen : natural := 8;
 	
@@ -35,9 +35,50 @@ begin
 
 	Stimul : process is
 	begin
+		inSS <= '1';
 		wait for 2* cClkTime;
 		inRstAsync <= '1';
-		wait for cSimTime;
+		wait for 2* cClkTime;
+		SPIClkEn <= '1';
+		wait for 2* cClkTime;
+		
+		--1st bit
+		inSS <= '0';
+		iSPIMOSI <= '1';
+		
+		--2nd bit
+		wait until NOT iSPIClk;
+		iSPIMOSI <= '0';
+		
+		--3rd bit
+		wait until NOT iSPIClk;
+		iSPIMOSI <= '1';
+		
+		--4th bit
+		wait until NOT iSPIClk;
+		iSPIMOSI <= '0';
+		
+		--5th bit
+		wait until NOT iSPIClk;
+		iSPIMOSI <= '1';
+		
+		--6th bit
+		wait until NOT iSPIClk;
+		iSPIMOSI <= '0';
+		
+		--7th bit
+		wait until NOT iSPIClk;
+		iSPIMOSI <= '1';
+		
+		--8th bit
+		wait until NOT iSPIClk;
+		iSPIMOSI <= '0';
+		
+		wait until oLastData'EVENT;
+		
+		report "Received Data: " & Integer'IMAGE(to_integer(unsigned(oLastData)));
+		assert oLastData = "10101010" report "Wrong data" severity failure;
+	
 		finish;
 	end process;
 

@@ -1,3 +1,7 @@
+-- A simple SPI receiver that does MSB
+-- -> the 1st received bit is 'HIGH
+-- -> the last received bit is 'LOW
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -28,7 +32,7 @@ architecture RTL of SPISlave is
 	constant cDataDefault : tInternalData := (
 		receivedData => (others=>'0'),
 		outputData => (others=>'0'),
-		currentBit => (others=>'0')
+		currentBit => std_ulogic_vector(to_unsigned(gWordLen-1,gWordLen))
 	);
 
 	signal state, nextState : state_type;
@@ -56,15 +60,17 @@ begin
 					when WaitForData =>
 						if (iSPIClk) then
 							--save the received bit
-							DataNext.outputData(to_integer(unsigned(Data.currentBit))) <= iSPIMOSI;
-							DataNext.currentBit <= (std_ulogic_vector(unsigned(Data.currentBit) + to_unsigned(1,Data.currentBit'LENGTH)));
+							DataNext.receivedData(to_integer(unsigned(Data.currentBit))) <= iSPIMOSI;
+							--move our pointer by one bit
+							DataNext.currentBit <= (std_ulogic_vector(unsigned(Data.currentBit) - to_unsigned(1,Data.currentBit'LENGTH)));
+							nextState <= WaitForClkLow;
 						end if;
 					when WaitForClkLow =>
 						if (NOT iSPIClk) then
 							--if our received data is complete, print it out and start next one
-							if(to_integer(unsigned(Data.currentBit)) = gWordLen) then
-								DataNext.currentBit <= (others=>'0');
-								DataNext.outputData <= DataNext.receivedData;
+							if(to_integer(unsigned(Data.currentBit)) = 0) then
+								DataNext.currentBit <= std_ulogic_vector(to_unsigned(gWordLen-1,DataNext.currentBit'LENGTH));
+								DataNext.outputData <= Data.receivedData;
 								Datanext.receivedData <= (others=>'0');
 							end if;
 							
@@ -75,5 +81,6 @@ begin
 	end process;
 
 	oLastData <= Data.outputData;
+	oSPIMISO <= '0';
 
 end architecture RTL;
