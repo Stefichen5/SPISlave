@@ -34,6 +34,8 @@ architecture RTL of SPISlave is
 		outputData => (others=>'0'),
 		currentBit => std_ulogic_vector(to_unsigned(gWordLen-1,gWordLen))
 	);
+	
+	constant cOnes : std_ulogic_vector (gWordlen-1 downto 0) := (others=>'1');
 
 	signal state, nextState : state_type;
 	signal Data, DataNext : tInternalData;
@@ -68,7 +70,7 @@ begin
 					when WaitForClkLow =>
 						if (NOT iSPIClk) then
 							--if our received data is complete, print it out and start next one
-							if(to_integer(unsigned(Data.currentBit)) = 0) then
+							if(Data.currentBit = cOnes) then
 								DataNext.currentBit <= std_ulogic_vector(to_unsigned(gWordLen-1,DataNext.currentBit'LENGTH));
 								DataNext.outputData <= Data.receivedData;
 								Datanext.receivedData <= (others=>'0');

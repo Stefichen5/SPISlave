@@ -17,8 +17,23 @@ architecture Bhv of tbSPISlave is
 	signal oSPIMISO : std_ulogic;
 	signal oLastData : std_ulogic_vector(cWordLen-1 downto 0);
 	signal SPIClkEn : std_ulogic := '0';
+	signal HEX0, HEX1 : std_ulogic_vector(6 downto 0);
 begin
 
+DUT : entity work.tbdSPISlave
+	port map(
+		iClk       => iClk,
+		inRstAsync => inRstAsync,
+		HEX0       => HEX0,
+		HEX1       => HEX1,
+		LEDR	   => oLastData,
+		iSPIClk    => iSPIClk,
+		iSPIMOSI   => iSPIMOSI,
+		inSS       => inSS,
+		oSPIMISO   => oSPIMISO
+	);
+
+/*
 	UUT : entity work.SPISlave
 		generic map(
 			gWordLen => cWordLen
@@ -32,19 +47,28 @@ begin
 			oSPIMISO   => oSPIMISO,
 			oLastData  => oLastData
 		);
-
+*/
 	Stimul : process is
 	begin
 		inSS <= '1';
 		wait for 2* cClkTime;
 		inRstAsync <= '1';
 		wait for 2* cClkTime;
-		SPIClkEn <= '1';
-		wait for 2* cClkTime;
+		
+		iSPIMOSI <= '1';
 		
 		--1st bit
 		inSS <= '0';
+		wait for 5* cClkTime;
+		SPIClkEn <= '1';
+		wait until oLastData'EVENT;
+		inSS <= '1';
+		SPIClkEn <= '0';
+		
+		/*
 		iSPIMOSI <= '1';
+		wait for 5 ns;
+		iSPIClk <= '1';
 		
 		--2nd bit
 		wait until NOT iSPIClk;
@@ -75,9 +99,10 @@ begin
 		iSPIMOSI <= '0';
 		
 		wait until oLastData'EVENT;
-		
+		 
 		report "Received Data: " & Integer'IMAGE(to_integer(unsigned(oLastData)));
 		assert oLastData = "10101010" report "Wrong data" severity failure;
+		*/
 	
 		finish;
 	end process;

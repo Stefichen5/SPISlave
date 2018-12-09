@@ -9,6 +9,7 @@ entity tbdSPISlave is
     	
     	HEX0         : out std_ulogic_vector(6 downto 0);
 	    HEX1         : out std_ulogic_vector(6 downto 0);
+	    LEDR		 : out std_ulogic_vector(7 downto 0);
 	    
 	  	iSPIClk : in std_ulogic;
 	  	iSPIMOSI: in std_ulogic;
@@ -38,9 +39,11 @@ begin
 			oLastData  => oLastData
 		);
 		
+		LEDR <= oLastData;
+		
 	SevSegDecode1 : entity work.Hex2SevSeg
 		generic map(
-			gInvertOutputs => false
+			gInvertOutputs => true
 		)
 		port map(
 			iHexValue => oLastData(7 downto 4),
@@ -49,7 +52,7 @@ begin
 		
 	SevSegDecode2 : entity work.Hex2SevSeg
 		generic map(
-			gInvertOutputs => false
+			gInvertOutputs => true
 		)
 		port map(
 			iHexValue => oLastData(3 downto 0),
