@@ -23,7 +23,7 @@ architecture RTL of tbdSPISlave is
 	
 	signal oLastData : std_ulogic_vector(cWordLen-1 downto 0);
 	
-	
+	signal toSync, synced : std_ulogic_vector (3 downto 0);
 begin
 	UUT : entity work.SPISlave
 		generic map(
@@ -32,14 +32,30 @@ begin
 		port map(
 			iClk       => iClk,
 			inRstAsync => inRstAsync,
-			iSPIClk    => iSPIClk,
-			iSPIMOSI   => iSPIMOSI,
-			inSS       => inSS,
+			iSPIClk    => synced(0),
+			iSPIMOSI   => synced(1),
+			inSS       => synced(2),
 			oSPIMISO   => oSPIMISO,
 			oLastData  => oLastData
 		);
 		
+		toSync(0) <= iSPIClk;
+		toSync(1) <= iSPIMOSI;
+		toSync(2) <= inSS;
+		
 		LEDR <= oLastData;
+	
+	Sync1 : entity work.Synchronizer
+		generic map(
+			gRange      => 3,
+			gResetValue => '0'
+		)
+		port map(
+			iClk       => iClk,
+			inRstAsync => inRstAsync,
+			iD         => toSync,
+			oQ         => synced
+		);
 		
 	SevSegDecode1 : entity work.Hex2SevSeg
 		generic map(
