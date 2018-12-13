@@ -1,11 +1,10 @@
 library ieee;
 use ieee.std_logic_1164.all;
-use work.Global.all;
 
 entity Synchronizer is
   generic (
     gRange        : natural := 1;
-    gResetValue   : std_ulogic := cInactivated
+    gResetValue   : std_ulogic := '0'
     );
   port (
     iClk          : in  std_ulogic;

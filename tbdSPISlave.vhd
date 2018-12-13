@@ -23,7 +23,7 @@ architecture RTL of tbdSPISlave is
 	
 	signal oLastData : std_ulogic_vector(cWordLen-1 downto 0);
 	
-	signal toSync, synced : std_ulogic_vector (3 downto 0);
+	signal toSync, synced : std_ulogic_vector (2 downto 0);
 begin
 	UUT : entity work.SPISlave
 		generic map(

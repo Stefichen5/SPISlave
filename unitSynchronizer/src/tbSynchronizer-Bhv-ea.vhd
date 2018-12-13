@@ -1,7 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-use work.global.all;
 
 entity tbSynchronizer is
 end;
@@ -30,9 +29,9 @@ begin
 
   TestSequence : process is
   begin
-    nRstAsync <= cnActivated;
+    nRstAsync <= '0';
     wait for 500 ns;
-    nRstAsync <= cnInactivated;
+    nRstAsync <= '1';
 
   -- ------------------
   -- add your code here
