@@ -150,6 +150,9 @@ set_global_assignment -name VHDL_INPUT_VERSION VHDL_2008
 set_global_assignment -name VHDL_SHOW_LMF_MAPPING_MESSAGES OFF
 set_global_assignment -name ENABLE_SIGNALTAP ON
 set_global_assignment -name USE_SIGNALTAP_FILE output_files/stp1.stp
+set_global_assignment -name VHDL_FILE "unitSynchronizer/src/Synchronizer-Rtl-a.vhd"
+set_global_assignment -name VHDL_FILE "unitSynchronizer/src/Synchronizer-e.vhd"
+set_global_assignment -name VHDL_FILE SPI_Pack.vhd
 set_global_assignment -name SOURCE_FILE tbdSPISlave.qsf
 set_global_assignment -name SDC_FILE tbdSPISlave.sdc
 set_global_assignment -name VHDL_FILE tbdSPISlave.vhd
